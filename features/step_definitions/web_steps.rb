@@ -41,12 +41,26 @@ Given /^the blog is set up$/ do
                 :profile_id => 1,
                 :name => 'admin',
                 :state => 'active'})
+  User.create!({:login => 'publisher',
+                :password => 'aaaaaaaa',
+                :email => 'john@snow.com',
+                :profile_id => 2,
+                :name => 'publisher',
+                :state => 'active'})
 end
 
 And /^I am logged into the admin panel$/ do
+  login_as('admin', 'aaaaaaaa')
+end
+
+And /^I am logged into the publisher panel$/ do
+  login_as('publisher', 'aaaaaaaa')
+end
+
+def login_as(user, password)
   visit '/accounts/login'
-  fill_in 'user_login', :with => 'admin'
-  fill_in 'user_password', :with => 'aaaaaaaa'
+  fill_in 'user_login', :with => user
+  fill_in 'user_password', :with => password
   click_button 'Login'
   if page.respond_to? :should
     page.should have_content('Login successful')

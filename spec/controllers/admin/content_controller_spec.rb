@@ -481,6 +481,42 @@ describe Admin::ContentController do
     it_should_behave_like 'destroy action'
     it_should_behave_like 'autosave action'
 
+    describe 'merge_with action' do
+
+      before do
+        @article1 = Factory(:article, :title => 'Title1', :body => 'Content1')
+        @article2 = Factory(:article, :title => 'Title2', :body => 'Content2')
+        @article3 = Factory(:article, :title => 'Title1', :body => "Content1\nContent2")
+        Article.class_eval("def merge_with(other_article_id) return Article.find(#{@article3.id}) end")
+      end
+
+      it 'should check that another article exists' do
+        Article.stub('exists?').and_return(false, true)
+        post :merge_with, 'id' => @article1.id, 'merge_with' => @article.id
+        response.should redirect_to("/admin/content/edit/#{@article1.id}")
+        flash[:warning].should_not be_nil
+        flash[:warning] = nil
+        post :merge_with, 'id' => @article1.id, 'merge_with' => @article2.id
+        response.should redirect_to("/admin/content/edit/#{@article3.id}")
+        flash[:warning].should be_nil
+        flash[:notice].should_not be_nil
+      end
+
+      it 'should check that it\'s not the same article' do
+        post :merge_with, 'id' => @article1.id, 'merge_with' => @article1.id
+        response.should redirect_to("/admin/content/edit/#{@article1.id}")
+        flash[:warning].should_not be_nil
+      end
+
+      it 'should create merged article' do
+        post :merge_with, 'id' => @article1.id, 'merge_with' => @article2.id
+        response.should redirect_to("/admin/content/edit/#{@article3.id}")
+        flash[:warning].should be_nil
+        flash[:notice].should_not be_nil
+      end
+
+    end
+
     describe 'edit action' do
 
       it 'should edit article' do

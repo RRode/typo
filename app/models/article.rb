@@ -79,6 +79,14 @@ class Article < Content
   def has_child?
     Article.exists?({:parent_id => self.id})
   end
+  
+  def merge_with(other_article_id)
+    target = Article.find_by_id other_article_id
+    self.body = self.body + "\n" + target.body
+    self.save!
+    target.destroy
+    self
+  end
 
   attr_accessor :draft, :keywords
 

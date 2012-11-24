@@ -414,6 +414,30 @@ describe Article do
     end
   end
 
+  describe 'merge_with' do
+    before :each do
+      @article1 = Article.new :title => 'Title1', :body => 'Body1'
+      @article2 = Article.new :title => 'Title2', :body => 'Body2'
+      Article.stub(:find_by_id).and_return(@article2)
+    end
+
+    it 'should search for article to merge' do
+      id = 'test'
+      Article.should_receive(:find_by_id).with(id).and_return(@article2)
+      @article1.merge_with(id)
+    end
+
+    it 'should merge body of both articles' do
+      @article1.merge_with :id
+      @article1.body.should == "Body1\nBody2"
+    end
+
+    it 'should destroy merge target article' do
+      @article2.should_receive(:destroy)
+      @article1.merge_with :id
+    end
+  end
+
   describe '#search' do
 
     describe 'with several words and no result' do

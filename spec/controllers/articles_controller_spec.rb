@@ -727,3 +727,4 @@ describe ArticlesController, "assigned keywords" do
     assigns(:keywords).should == "typo, is, amazing"
   end
 end
+

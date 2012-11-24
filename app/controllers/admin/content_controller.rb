@@ -61,6 +61,25 @@ class Admin::ContentController < Admin::BaseController
     render :partial => "#{editor}_editor"
   end
 
+  def merge_with
+    if params[:id] == params[:merge_with]
+      flash[:warning] = 'Biach plz!'
+      redirect_to :action => 'edit', :id => params[:id]
+      return
+    end
+    
+    unless Article.exists?(params[:target_id])
+      flash[:warning] = 'This is not the article you want to merge.'
+      redirect_to :action => 'edit', :id => params[:id]
+      return
+    end
+    
+    article = Article.find params[:id]
+    merged = article.merge_with(params[:target_id])
+    flash[:notice] = 'Merging stuff'
+    redirect_to :action => 'edit', :id => merged.id
+  end
+
   def category_add; do_add_or_remove_fu; end
   alias_method :resource_add,    :category_add
   alias_method :resource_remove, :category_add
