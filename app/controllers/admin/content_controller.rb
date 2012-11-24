@@ -73,14 +73,14 @@ class Admin::ContentController < Admin::BaseController
       return
     end
     
-    unless Article.exists?(params[:target_id])
+    unless Article.exists?(params[:merge_with])
       flash[:warning] = 'This is not the article you want to merge.'
       redirect_to :action => 'edit', :id => params[:id]
       return
     end
     
     article = Article.find params[:id]
-    merged = article.merge_with(params[:target_id])
+    merged = article.merge_with(params[:merge_with])
     flash[:notice] = 'Merging stuff'
     redirect_to :action => 'edit', :id => merged.id
   end
