@@ -62,7 +62,7 @@ class Admin::ContentController < Admin::BaseController
   end
 
   def merge_with
-    if params[:id] == params[:merge_with]
+    if current_user.profile.label != 'admin' || params[:id] == params[:merge_with]
       flash[:warning] = 'Biach plz!'
       redirect_to :action => 'edit', :id => params[:id]
       return
