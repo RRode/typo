@@ -83,7 +83,10 @@ class Article < Content
   def merge_with(other_article_id)
     target = Article.find_by_id other_article_id
     self.body = self.body + "\n" + target.body
+    #target.comments.each {|c| self.comments << c}
+    self.comments.concat target.comments
     self.save!
+    target.comments(true) #update comments cache, should now be empty
     target.destroy
     self
   end
