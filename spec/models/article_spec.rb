@@ -436,6 +436,18 @@ describe Article do
       @article2.should_receive(:destroy)
       @article1.merge_with :id
     end
+
+   it 'should merge comments of both articles' do
+      comments1 = []
+      comments2 = [mock('Comment'), mock('Comment')]
+      @article1.stub(:comments).and_return(comments1)
+      @article2.stub(:comments).and_return(comments2)
+      @article2.should_receive(:comments).with(true)
+      @article2.stub(:destroy)
+      @article1.merge_with :id
+      comments1.count.should == comments2.count
+    end
+
   end
 
   describe '#search' do
